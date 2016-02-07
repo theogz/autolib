@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import requests, json, pandas as pd
 from time import sleep
 
@@ -26,23 +27,25 @@ def get_parks(station_id):
 
 def monitoring(station_id, trip):
     update()
-    if (trip=='depart') and (get_cars(station_id)=0):
-        while (get_cars(stations_id) = 0):
+    if (trip=='depart') and (get_cars(station_id)==0):
+        while (get_cars(station_id) == 0):
             sleep(1)
             update()
-        print r"Une voiture est disponible à la station"
+        print "Une voiture est disponible à la station"
 
     elif (get_cars(station_id)>0):
-        print r"Il y a déjà une voiture."
+        print "Il y a déjà une voiture."
 
-    elif (trip=="arrivee") and (get_parks(station_id)=0):
-        while (get_parks(station_id) = 0):
+    elif (trip=="arrivee") and (get_parks(station_id)==0):
+        while (get_parks(station_id) == 0):
             sleep(1)
-            update
-        print r"Une place est disponible à la station."
+            update()
+        print "Une place est disponible à la station."
 
-    elif (get_parks(station_id)=0):
-        print r"Il y a déjà une place."
+    elif (get_parks(station_id)==0):
+        print "Il y a déjà une place."
 
     else:
         print "Erreur inconnue"
+
+monitoring(5, "depart")
