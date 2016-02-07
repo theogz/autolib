@@ -6,6 +6,8 @@ import smtplib
 
 url = 'https://www.autolib.eu/fr/stations'
 
+# Fonction qui met a jour le tableau des stations de json a pandas, en remplacant l'index par station_id
+
 def update():
     r = requests.get(url)
     source_code = str(r.content)
@@ -25,6 +27,7 @@ def get_parks(station_id):
     update()
     return stations.loc[station_id, 'parks']
 
+# Fonction qui recupere les informations dans le fichier de config et qui envoie le mail correspondant
 def notification_email(type_response):
 
     config = SafeConfigParser()
@@ -53,23 +56,25 @@ def notification_email(type_response):
 
 def monitoring(station_id, trip):
     update()
-    if (trip=='depart') and (get_cars(station_id)==0):
-        while (get_cars(station_id) == 0):
+    if (trip=='depart'):
+        if (get_cars(station_id)==0):
+            while (get_cars(station_id) == 0):
             sleep(5)
             update()
-        type_response = "new car"
+            type_response = "new car"
 
-    elif (trip=='depart') and (get_cars(station_id)>0):
-        type_response = "car already available"
+        elif (get_cars(station_id)>0):
+            type_response = "car already available"
 
-    elif (trip=="arrivee") and (get_parks(station_id)==0):
-        while (get_parks(station_id) == 0):
+    elif (trip=="arrivee"):
+        if (get_parks(station_id)==0):
+            while (get_parks(station_id) == 0):
             sleep(5)
             update()
-        type_response = "new spot"
+            type_response = "new spot"
 
-    elif (trip=='arrivee') and(get_parks(station_id)>0):
-        type_response = "spot already available"
+        elif (get_parks(station_id)>0):
+            type_response = "spot already available"
 
     else:
         print "Erreur inconnue"
