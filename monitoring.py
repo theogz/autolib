@@ -59,9 +59,9 @@ def monitoring(station_id, trip):
     if (trip=='depart'):
         if (get_cars(station_id)==0):
             while (get_cars(station_id) == 0):
-            sleep(5)
-            update()
-            type_response = "new car"
+                sleep(5)
+                update()
+                type_response = "new car"
 
         elif (get_cars(station_id)>0):
             type_response = "car already available"
@@ -69,9 +69,9 @@ def monitoring(station_id, trip):
     elif (trip=="arrivee"):
         if (get_parks(station_id)==0):
             while (get_parks(station_id) == 0):
-            sleep(5)
-            update()
-            type_response = "new spot"
+                sleep(5)
+                update()
+                type_response = "new spot"
 
         elif (get_parks(station_id)>0):
             type_response = "spot already available"
