@@ -33,13 +33,13 @@ def notification_email(type_response):
     fromaddr = config.get('main', 'username')+'@gmail.com'
     receiver = config.get('main', 'receiver')
 
-    if type_response = "car already available":
+    if type_response == "car already available":
         msg = "Subject: Une voiture est deja disponible\n\n"
-    elif type_response = "new car":
+    elif type_response == "new car":
         msg = "Subject: Une voiture est maintenant disponible\n\n"
-    elif type_response = "spot already available":
+    elif type_response == "spot already available":
         msg = "Subject: Une place est deja disponible\n\n"
-    elif type_response = "new spot":
+    elif type_response == "new spot":
         msg = "Subject: Une place est maintenant disponible\n\n"
 
     username = config.get('main', 'username')
@@ -55,20 +55,20 @@ def monitoring(station_id, trip):
     update()
     if (trip=='depart') and (get_cars(station_id)==0):
         while (get_cars(station_id) == 0):
-            sleep(1)
+            sleep(5)
             update()
         type_response = "new car"
 
-    elif (get_cars(station_id)>0):
+    elif (trip=='depart') and (get_cars(station_id)>0):
         type_response = "car already available"
 
     elif (trip=="arrivee") and (get_parks(station_id)==0):
         while (get_parks(station_id) == 0):
-            sleep(1)
+            sleep(5)
             update()
         type_response = "new spot"
 
-    elif (get_parks(station_id)>0):
+    elif (trip=='arrivee') and(get_parks(station_id)>0):
         type_response = "spot already available"
 
     else:
@@ -76,4 +76,5 @@ def monitoring(station_id, trip):
 
     notification_email(type_response)
 
-monitoring(233, "depart")
+
+monitoring(535, "arrivee")
