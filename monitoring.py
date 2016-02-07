@@ -5,6 +5,7 @@ from ConfigParser import SafeConfigParser
 import smtplib
 
 url = 'https://www.autolib.eu/fr/stations'
+global stations
 
 # Fonction qui met a jour le tableau des stations de json a pandas, en remplacant l'index par station_id
 
@@ -13,18 +14,15 @@ def update():
     source_code = str(r.content)
     raw_data = source_code.split("var map = initMap(",1)[1].split('\n', 1)[0][:-3]
     
-    global stations
     stations = pd.DataFrame(pd.read_json(raw_data))
 
     stations.set_index('station_id', inplace=True)
 
 
 def get_cars(station_id):
-    update()
     return stations.loc[station_id, 'cars']
 
 def get_parks(station_id):
-    update()
     return stations.loc[station_id, 'parks']
 
 # Fonction qui recupere les informations dans le fichier de config et qui envoie le mail correspondant
