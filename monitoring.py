@@ -5,7 +5,6 @@ from ConfigParser import SafeConfigParser
 import smtplib
 
 url = 'https://www.autolib.eu/fr/stations'
-global stations
 
 # Fonction qui met a jour le tableau des stations de json a pandas, en remplacant l'index par station_id
 
@@ -13,7 +12,7 @@ def update():
     r = requests.get(url)
     source_code = str(r.content)
     raw_data = source_code.split("var map = initMap(",1)[1].split('\n', 1)[0][:-3]
-    
+    global stations
     stations = pd.DataFrame(pd.read_json(raw_data))
 
     stations.set_index('station_id', inplace=True)
@@ -59,7 +58,7 @@ def monitoring(station_id, trip):
             while (get_cars(station_id) == 0):
                 sleep(5)
                 update()
-                type_response = "new car"
+            type_response = "new car"
 
         elif (get_cars(station_id)>0):
             type_response = "car already available"
@@ -69,7 +68,7 @@ def monitoring(station_id, trip):
             while (get_parks(station_id) == 0):
                 sleep(5)
                 update()
-                type_response = "new spot"
+            type_response = "new spot"
 
         elif (get_parks(station_id)>0):
             type_response = "spot already available"
@@ -80,4 +79,4 @@ def monitoring(station_id, trip):
     notification_email(type_response)
 
 
-monitoring(535, "arrivee")
+monitoring(535, "depart")
