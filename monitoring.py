@@ -57,6 +57,7 @@ def monitoring(station_id, trip):
     # either sleep for 5 sec or send notification
     if (trip=='depart'):
         if (get_cars(station_id)==0):
+            print "no car there yet"
             sleep(5)
             return monitoring(station_id, trip)
             
@@ -65,6 +66,7 @@ def monitoring(station_id, trip):
 
     elif (trip=="arrivee"):
         if (get_parks(station_id)==0):
+            print "no spot there yet"
             sleep(5)
             return monitoring(station_id, trip)
 
@@ -77,4 +79,4 @@ def monitoring(station_id, trip):
     notification_email(type_response)
 
 
-monitoring(535, "depart")
+monitoring(1186, "depart")
