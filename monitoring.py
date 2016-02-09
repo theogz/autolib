@@ -8,20 +8,21 @@ url = 'https://www.autolib.eu/fr/stations'
 
 
 class Database:
-    def __init__(self):
+    def get_cars(self, station_id):
+        return self.stations.loc[station_id, 'cars']
+    def get_parks(self, station_id):
+        return self.stations.loc[station_id, 'parks']
+    def update(self):
+        print "fetching page"
         r = requests.get(url)
         source_code = str(r.content)
         raw_data = source_code.split("var map = initMap(",1)[1].split('\n', 1)[0][:-3]
         result = pd.DataFrame(pd.read_json(raw_data))
         result.set_index('station_id', inplace=True)
         self.stations = result
-    def get_cars(self, station_id):
-        return self.stations.loc[station_id, 'cars']
-    def get_parks(self, station_id):
-        return self.stations.loc[station_id, 'parks']
-    def update(self):
-        self.__init__()
 
+# instantiate Stations
+Stations = Database()
 
 
 def notification_email(type_response):
@@ -48,7 +49,7 @@ def notification_email(type_response):
 
 def monitoring(station_id, trip):
     # make sure we have fresh data
-    Stations = Database()
+    Stations.update()
 
     # either sleep for 5 sec or send notification
     if (trip=='depart'):
