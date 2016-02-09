@@ -8,13 +8,16 @@ url = 'https://www.autolib.eu/fr/stations'
 
 # Fonction qui met a jour le tableau des stations de json a pandas, en remplacant l'index par station_id
 
+# global is declared ... globally
+stations = None
+
 def update():
     r = requests.get(url)
     source_code = str(r.content)
     raw_data = source_code.split("var map = initMap(",1)[1].split('\n', 1)[0][:-3]
+
     global stations
     stations = pd.DataFrame(pd.read_json(raw_data))
-
     stations.set_index('station_id', inplace=True)
 
 
@@ -26,25 +29,21 @@ def get_parks(station_id):
 
 # Fonction qui recupere les informations dans le fichier de config et qui envoie le mail correspondant
 def notification_email(type_response):
-
+    # content of the notification
+    if type_response == "car is available":
+        msg = "Subject: Une voiture est disponible"
+    elif type_response == "spot is available":
+        msg = "Subject: Une place est disponible"
+    
+    # credentials of sender and recipient info
     config = SafeConfigParser()
     config.read('config.ini')
-
     fromaddr = config.get('main', 'username')+'@gmail.com'
     receiver = config.get('main', 'receiver')
-
-    if type_response == "car already available":
-        msg = "Subject: Une voiture est deja disponible\n\n"
-    elif type_response == "new car":
-        msg = "Subject: Une voiture est maintenant disponible\n\n"
-    elif type_response == "spot already available":
-        msg = "Subject: Une place est deja disponible\n\n"
-    elif type_response == "new spot":
-        msg = "Subject: Une place est maintenant disponible\n\n"
-
     username = config.get('main', 'username')
     password = config.get('main', 'password')
 
+    # connection to the mail server
     server = smtplib.SMTP('smtp.gmail.com:587')
     server.starttls()
     server.login(username,password)
@@ -52,26 +51,25 @@ def notification_email(type_response):
     server.quit()
 
 def monitoring(station_id, trip):
+    # make sure we have fresh data
     update()
+
+    # either sleep for 5 sec or send notification
     if (trip=='depart'):
         if (get_cars(station_id)==0):
-            while (get_cars(station_id) == 0):
-                sleep(5)
-                update()
-            type_response = "new car"
-
+            sleep(5)
+            return monitoring(station_id, trip)
+            
         elif (get_cars(station_id)>0):
-            type_response = "car already available"
+            type_response = "car is available"
 
     elif (trip=="arrivee"):
         if (get_parks(station_id)==0):
-            while (get_parks(station_id) == 0):
-                sleep(5)
-                update()
-            type_response = "new spot"
+            sleep(5)
+            return monitoring(station_id, trip)
 
         elif (get_parks(station_id)>0):
-            type_response = "spot already available"
+            type_response = "spot is available"
 
     else:
         print "Erreur inconnue"
