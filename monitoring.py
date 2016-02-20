@@ -3,23 +3,32 @@ import requests, json, pandas as pd
 from time import sleep
 from ConfigParser import SafeConfigParser
 import smtplib
+from geopy.distance import vincenty
+import sys
 
 url = 'https://www.autolib.eu/fr/stations'
 
+def vincenty_in_km(lat1, long1, lat2, long2):
+    return vincenty(lat1, long1, lat2, long2).km
 
 class Database:
-    def get_cars(self, station_id):
-        return self.stations.loc[station_id, 'cars']
-    def get_parks(self, station_id):
-        return self.stations.loc[station_id, 'parks']
     def update(self):
         print "fetching page"
         r = requests.get(url)
         source_code = str(r.content)
         raw_data = source_code.split("var map = initMap(",1)[1].split('\n', 1)[0][:-3]
-        result = pd.DataFrame(pd.read_json(raw_data))
-        result.set_index('station_id', inplace=True)
-        self.stations = result
+        stations_pandas = pd.DataFrame(pd.read_json(raw_data))
+        stations_pandas.set_index('station_id', inplace=True)
+        self.stations = stations_pandas
+    def get_cars(self, station_id):
+        return self.stations.loc[station_id, 'cars']
+    def get_parks(self, station_id):
+        return self.stations.loc[station_id, 'parks']
+    def get_n_closest_stations(self, n, lat, lng):
+        self.stations["distance to coord"] = map(vincenty_in_km, [lat], [lng], self.stations["lat"], self.stations["lng"])
+        top_n_closest = Stations.stations.sort("distance to coord", ascending=True).head(n).index.tolist()
+        return top_n_closest
+
 
 # instantiate Stations
 Stations = Database()
@@ -47,10 +56,11 @@ def notification_email(type_response):
     server.sendmail(fromaddr, receiver, msg)
     server.quit()
 
-def monitoring(station_id, trip):
+
+def monitoring(n, lat, lng, trip):
     # make sure we have fresh data
     Stations.update()
-
+    closest_stations = Stations.get_n_closest_stations(n, lat, lng)
     # either sleep for 5 sec or send notification
     if (trip=='depart'):
         if (Stations.get_cars(station_id)==0):
@@ -75,5 +85,9 @@ def monitoring(station_id, trip):
 
     notification_email(type_response)
 
+nb_stations = int(sys.argv[1])
+lat = float(sys.argv[2])
+lng = float(sys.argv[3])
+trip = str(sys.argv[4])
 
-monitoring(5, "arrivee")
+monitoring(nb_stations, lat, lng, trip) 

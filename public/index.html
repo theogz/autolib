@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Géolocalisation Autolib</title>
+        <meta charset="utf-8">
+    </head>
+    <body>
+        <h1 id="message">En attente de la position…</h1>
+        <script type="text/javascript">
+            navigator.geolocation.getCurrentPosition(function (pos) {
+                updatePosition(pos);
+            });
+
+            var updatePosition = function (position) {
+                document.location.href = '/monitoring?lat=' + position.coords.latitude + '&long=' + position.coords.longitude;
+            };
+
+        </script>
+    </body>
+</html>
