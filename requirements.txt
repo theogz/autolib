@@ -1,6 +1,5 @@
 requests
 numpy
-scipy
 pandas
-ConfigParser
 geopy
+ConfigParser
