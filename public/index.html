@@ -3,16 +3,47 @@
     <head>
         <title>Géolocalisation Autolib</title>
         <meta charset="utf-8">
+        <style type="text/css">
+            @import url(https://fonts.googleapis.com/css?family=Roboto:400,100,300,500,700,900);
+    
+            body {
+                font-family: Roboto;
+            }
+
+            #next {
+                display: none;
+            }
+
+            #button {
+                border: 1px solid #cecece;
+                border-radius: 3px;
+                background: white;
+                box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, .5);
+                padding: 5px 20px;
+                text-decoration: none;
+                color: rgb(41, 197, 208);
+                cursor: pointer;
+            }
+
+            #button:hover {
+                box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, .5);
+            }
+        </style>
     </head>
     <body>
         <h1 id="message">En attente de la position…</h1>
+        <div id="next">Cliquez ici pour envoyer votre position: <a id="button">Go!</a></div>
         <script type="text/javascript">
             navigator.geolocation.getCurrentPosition(function (pos) {
                 updatePosition(pos);
             });
 
             var updatePosition = function (position) {
-                document.location.href = '/monitoring?lat=' + position.coords.latitude + '&long=' + position.coords.longitude;
+                var button = document.getElementById('button');
+                button.href = '/monitoring?lat=' + position.coords.latitude + '&long=' + position.coords.longitude;
+
+                document.getElementById('message').style.display = 'none';
+                document.getElementById('next').style.display = 'block';
             };
 
         </script>

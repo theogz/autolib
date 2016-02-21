@@ -7,6 +7,7 @@ var port = Number(process.env.PORT) || 3000;
 
 app.use(express.static('public'));
 
+
 app.get('/monitoring', function (req, res) {
     var longitude = req.query.long;
     var latitude = req.query.lat;
@@ -21,7 +22,8 @@ app.get('/monitoring', function (req, res) {
         console.log('results: %j', results);
     });
 
-    res.send("oui j'ai une voiture autour de " + req.query.long + " et " + req.query.lat);
+    res.send("oui j'ai une voiture autour de " + req.query.lat + " et " + req.query.long);
+    // a terme modifier ca par sendFile pour la page de "traitement"
 });
 
 app.get('*', function (req, res) {
