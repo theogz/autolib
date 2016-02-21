@@ -53,7 +53,7 @@ class Database:
     def get_n_closest_stations(self, n, lat, lng):
         self.stations["distance to coord"] = map(vincenty_in_km, [lat]*len(self.stations),
             [lng]*len(self.stations), self.stations["lat"], self.stations["lng"])
-        top_n_closest = Stations.stations.sort("distance to coord", ascending=True).head(n).index.tolist()
+        top_n_closest = Stations.stations.sort_values("distance to coord", ascending=True).head(n).index.tolist()
         return top_n_closest
 
     def monitoring(self, n, lat, lng, trip):
