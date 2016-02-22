@@ -13,12 +13,12 @@ url = 'https://www.autolib.eu/fr/stations'
 def vincenty_in_km(lat1, long1, lat2, long2):
     return vincenty((lat1, long1), (lat2, long2)).km
 
-def notification_email(type_response):
+def notification_email(type_response, station_address):
     # content of the notification
     if type_response == "car is available":
-        msg = "Subject: Une voiture est disponible"
+        msg = "Subject: Une voiture est disponible a la station situee "+station_address.encode("utf-8")
     elif type_response == "spot is available":
-        msg = "Subject: Une place est disponible"
+        msg = "Subject: Une place est disponible a la station situee "+station_address.encode("utf-8")
     
     # credentials of sender and recipient info
     config = SafeConfigParser()
@@ -50,6 +50,9 @@ class Database:
         return self.stations.loc[station_id, 'cars']
     def get_parks(self, station_id):
         return self.stations.loc[station_id, 'parks']
+    def id_to_address(self, station_id):
+        return self.stations.loc[station_id, 'address']
+
     def get_n_closest_stations(self, n, lat, lng):
         self.stations["distance to coord"] = map(vincenty_in_km, [lat]*len(self.stations),
             [lng]*len(self.stations), self.stations["lat"], self.stations["lng"])
@@ -89,8 +92,8 @@ class Database:
         else:
             print "Erreur inconnue"
 
-        # notification_email(type_response)
-        print type_response
+        notification_email(type_response, self.id_to_address(id_response))
+        
 
 
 
