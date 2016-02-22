@@ -101,11 +101,6 @@ class Database:
             print "Erreur inconnue"
 
         notification_email(type_response, self.id_to_address(id_response), receiver_email)
-        
-
-
-
-
 
 try:
     nb_stations = int(sys.argv[1])
@@ -118,11 +113,11 @@ except IndexError:
     # test station coordinates
     # lat = 48.867413199999994
     # lng = 2.2892026999999997
-    # Paris coordinates
+    # Paris coordinates as default
     lat = 48.8567
     lng = 2.3508
     trip = "depart"
-    email = "jsljfhslkdjfhsdklqjfh@gmail.com"
+    email = "whatever@gmail.com"
 
 Stations = Database()
 

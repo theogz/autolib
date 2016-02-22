@@ -13,7 +13,7 @@ app.get('/monitoring', function (req, res) {
     var latitude = req.query.lat;
     var email = req.query.email;
     var options = {
-        args: [3, longitude, latitude, "depart", email]
+        args: [3, latitude, longitude, "depart", email]
     };
 
     PythonShell.run('monitoring.py', options, function (err, results) {
