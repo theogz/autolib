@@ -25,11 +25,11 @@ def notification_email(type_response, station_address, receiver_email):
     config = SafeConfigParser()
     
 
+    receiver = receiver_email
     try:
         fromaddr = os.environ['SENDER_USERNAME']+'@gmail.com'
         username = os.environ['SENDER_USERNAME']
         password = os.environ['SENDER_PASSWORD']
-        receiver = receiver_email
     except KeyError:
         config.read('config.ini')
         fromaddr = config.get('main', 'username')+'@gmail.com'
