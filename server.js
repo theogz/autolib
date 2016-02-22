@@ -11,9 +11,9 @@ app.use(express.static('public'));
 app.get('/monitoring', function (req, res) {
     var longitude = req.query.long;
     var latitude = req.query.lat;
-
+    var email = req.query.email;
     var options = {
-        args: [3, longitude, latitude, "depart"]
+        args: [3, longitude, latitude, "depart", email]
     };
 
     PythonShell.run('monitoring.py', options, function (err, results) {
@@ -22,7 +22,7 @@ app.get('/monitoring', function (req, res) {
         console.log('results: %j', results);
     });
 
-    res.send("oui j'ai une voiture autour de " + req.query.lat + " et " + req.query.long);
+    res.send("coordonnees : " + req.query.lat + " et " + req.query.long);
     // a terme modifier ca par sendFile pour la page de "traitement"
 });
 

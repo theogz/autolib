@@ -10,9 +10,9 @@
                 font-family: Roboto;
             }
 
-            #next {
+/*            #next {
                 display: none;
-            }
+            }*/
 
             #button {
                 border: 1px solid #cecece;
@@ -28,24 +28,49 @@
             #button:hover {
                 box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, .5);
             }
+
         </style>
     </head>
     <body>
         <h1 id="message">En attente de la position…</h1>
-        <div id="next">Cliquez ici pour envoyer votre position: <a id="button">Go!</a></div>
+        <div id="next">
+            <form id="email_form">
+                Rentrer votre email pour recevoir une alerte : <input type="text" placeholder="example@domain.com" id="email">
+            <br>
+            
+            </form>
+            Cliquez ici pour envoyer votre position actuelle : <button id="button" onclick="getArgs()">Go!</button>
+        </div>
         <script type="text/javascript">
-            navigator.geolocation.getCurrentPosition(function (pos) {
-                updatePosition(pos);
-            });
+            var email = "";
+            var button = document.getElementById('button');
+            function getArgs() {
+                
+                var email = document.getElementById('email').value;
 
-            var updatePosition = function (position) {
-                var button = document.getElementById('button');
-                button.href = '/monitoring?lat=' + position.coords.latitude + '&long=' + position.coords.longitude;
+                navigator.geolocation.getCurrentPosition(function (pos) {
+                    window.location.href='/monitoring?lat=' + pos.coords.latitude + '&long=' + pos.coords.longitude + "&email=" + email;
+                    
+                    document.getElementById('message').style.display = 'none';
+                    document.getElementById('next').style.display = 'block';
 
-                document.getElementById('message').style.display = 'none';
-                document.getElementById('next').style.display = 'block';
-            };
+                
+               
+                });
+               
+            }
 
+            
+            
+/*            var updatePosition = function (position) {
+                
+                button.href = '/monitoring?lat=' + position.coords.latitude + '&long=' + position.coords.longitude + "&email=" + toto;
+
+
+                
+                return pos
+            };*/
+            
         </script>
     </body>
 </html>

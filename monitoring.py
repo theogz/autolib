@@ -13,7 +13,7 @@ url = 'https://www.autolib.eu/fr/stations'
 def vincenty_in_km(lat1, long1, lat2, long2):
     return vincenty((lat1, long1), (lat2, long2)).km
 
-def notification_email(type_response, station_address):
+def notification_email(type_response, station_address, receiver_email):
     # content of the notification
     if type_response == "car is available":
         msg = "Subject: Une voiture est disponible a la station situee "+station_address.encode("utf-8")
@@ -22,11 +22,12 @@ def notification_email(type_response, station_address):
     
     # credentials of sender and recipient info
     config = SafeConfigParser()
+    
     config.read('config.ini')
     fromaddr = config.get('main', 'username')+'@gmail.com'
-    receiver = config.get('main', 'receiver')
     username = config.get('main', 'username')
     password = config.get('main', 'password')
+    receiver = receiver_email
 
     # connection to the mail server
     server = smtplib.SMTP('smtp.gmail.com:587')
@@ -59,7 +60,7 @@ class Database:
         top_n_closest = Stations.stations.sort_values("distance to coord", ascending=True).head(n).index.tolist()
         return top_n_closest
 
-    def monitoring(self, n, lat, lng, trip):
+    def monitoring(self, n, lat, lng, trip, receiver_email):
         #make sure we have fresh data
         self.update()
         closest_stations = self.get_n_closest_stations(n, lat, lng)
@@ -92,7 +93,7 @@ class Database:
         else:
             print "Erreur inconnue"
 
-        notification_email(type_response, self.id_to_address(id_response))
+        notification_email(type_response, self.id_to_address(id_response), receiver_email)
         
 
 
@@ -104,16 +105,18 @@ try:
     lat = float(sys.argv[2])
     lng = float(sys.argv[3])
     trip = str(sys.argv[4])
+    email = str(sys.argv[5])
 except IndexError:
     nb_stations = 3
-    # empty station coordinates
-    lat = 48.87244751
-    lng = 2.30416621
+    # test station coordinates
+    # lat = 48.867413199999994
+    # lng = 2.2892026999999997
     # Paris coordinates
-    # lat = 48.8567
-    # lng = 2.3508
+    lat = 48.8567
+    lng = 2.3508
     trip = "depart"
+    email = "jsljfhslkdjfhsdklqjfh@gmail.com"
 
 Stations = Database()
 
-Stations.monitoring(nb_stations, lat, lng, trip)
+Stations.monitoring(nb_stations, lat, lng, trip, email)
